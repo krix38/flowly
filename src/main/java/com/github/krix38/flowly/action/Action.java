@@ -33,10 +33,18 @@ public class Action {
             try{
                 runMethod(abstractModel);
             }catch (Exception exception){
-                abstractModel.setFailureInformation(new FailureInformation(exception));
+                abstractModel.setFailureInformation(new FailureInformation(getTargetException(exception)));
             }
         }
         return abstractModel;
+    }
+
+    private Throwable getTargetException(Exception exception) {
+        if(exception instanceof InvocationTargetException){
+            return ((InvocationTargetException) exception).getTargetException();
+        }else{
+            return exception;
+        }
     }
 
     private <T> void runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {

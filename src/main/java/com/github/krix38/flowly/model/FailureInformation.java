@@ -5,13 +5,13 @@ package com.github.krix38.flowly.model;
  */
 public class FailureInformation {
 
-    private Exception exception;
+    private Throwable exception;
 
-    public FailureInformation(Exception exception) {
+    public FailureInformation(Throwable exception) {
         this.exception = exception;
     }
 
-    public Exception getException() {
+    public Throwable getException() {
         return exception;
     }
 }
