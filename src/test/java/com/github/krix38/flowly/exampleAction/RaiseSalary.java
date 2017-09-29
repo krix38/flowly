@@ -9,9 +9,15 @@ import com.github.krix38.flowly.model.AbstractModel;
  */
 public class RaiseSalary {
 
+    public RaiseSalary(Integer raiseBy) {
+        this.raiseBy = raiseBy;
+    }
+
+    private Integer raiseBy;
+
     @FlowAction
     public void raise(Employee employee){
-        employee.setSalary(employee.getSalary() + 100);
+        employee.setSalary(employee.getSalary() + raiseBy);
     }
 
 }

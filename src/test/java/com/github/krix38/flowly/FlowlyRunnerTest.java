@@ -21,15 +21,15 @@ public class FlowlyRunnerTest {
 
         FlowRegister flowRegister = new FlowRegister();
 
-        flowRegister.register(RaiseSalary.class);
+        flowRegister.register(new RaiseSalary(200));
         flowRegister.register(UpperCaseNames.class);
-        flowRegister.register(new LowerSurname());
+        flowRegister.register(LowerSurname.class);
 
         flowRegister.run(employee);
 
         assertEquals("JAN", employee.getFirstName());
         assertEquals("kowalski", employee.getLastName());
-        assertEquals(new Integer(200), employee.getSalary());
+        assertEquals(new Integer(300), employee.getSalary());
 
     }
 }
