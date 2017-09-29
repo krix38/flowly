@@ -3,6 +3,7 @@ package com.github.krix38.flowly.action;
 import com.github.krix38.flowly.model.AbstractModel;
 import com.github.krix38.flowly.model.FailureInformation;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -31,14 +32,36 @@ public class Action {
         return abstractModel;
     }
 
-    private <T> void runMethod(T abstractModel) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        if(method.getParameterTypes()[0] == abstractModel.getClass()){
-            method.invoke(getClassInstance(), abstractModel);
+    private <T> void runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
+            method.invoke(getClassInstance(), model);
         }
     }
 
+    private Boolean classHasDefaultConstructor(){
+        for(Constructor constructor : tClass.getConstructors()){
+            if(constructor.getParameters().length == 0){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Constructor getClassDefaultConstructor(){
+        for(Constructor constructor : tClass.getConstructors()){
+            if(constructor.getParameters().length == 0){
+                return constructor;
+            }
+        }
+        return null;
+    }
+
+    private <T> Boolean methodArgumentMatchesModelClass(T model) {
+        return method.getParameterTypes().length == 1 && method.getParameterTypes()[0] == model.getClass();
+    }
+
     private Object getClassInstance() throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        return tClass.getConstructors()[0].newInstance();
+        return getClassDefaultConstructor().newInstance();
     }
 
 }
