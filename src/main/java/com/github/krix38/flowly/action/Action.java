@@ -16,8 +16,15 @@ public class Action {
 
     private Method method;
 
+    private Object instance;
+
     public Action(Class tClass, Method method) {
         this.tClass = tClass;
+        this.method = method;
+    }
+
+    public Action(Object instance, Method method) {
+        this.instance = instance;
         this.method = method;
     }
 
@@ -33,9 +40,18 @@ public class Action {
     }
 
     private <T> void runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
-            method.invoke(getClassInstance(), model);
+        if(classTypeprovided()){
+            if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
+                method.invoke(getClassInstance(), model);
+            }
+        }else{
+            method.invoke(instance, model);
         }
+
+    }
+
+    private Boolean classTypeprovided() {
+        return tClass != null;
     }
 
     private Boolean classHasDefaultConstructor(){

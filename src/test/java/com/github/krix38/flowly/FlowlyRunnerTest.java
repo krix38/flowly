@@ -1,5 +1,6 @@
 package com.github.krix38.flowly;
 
+import com.github.krix38.flowly.exampleAction.LowerSurname;
 import com.github.krix38.flowly.exampleAction.RaiseSalary;
 import com.github.krix38.flowly.exampleAction.UpperCaseNames;
 import com.github.krix38.flowly.exampleModel.Employee;
@@ -22,11 +23,12 @@ public class FlowlyRunnerTest {
 
         flowRegister.register(RaiseSalary.class);
         flowRegister.register(UpperCaseNames.class);
+        flowRegister.register(new LowerSurname());
 
         flowRegister.run(employee);
 
         assertEquals("JAN", employee.getFirstName());
-        assertEquals("KOWALSKI", employee.getLastName());
+        assertEquals("kowalski", employee.getLastName());
         assertEquals(new Integer(200), employee.getSalary());
 
     }

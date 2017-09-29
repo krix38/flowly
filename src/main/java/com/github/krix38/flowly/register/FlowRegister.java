@@ -23,6 +23,14 @@ public class FlowRegister {
         }
     }
 
+    public void register(Object instance){
+        for(Method method : instance.getClass().getDeclaredMethods()){
+            if(method.isAnnotationPresent(FlowAction.class)){
+                actions.add(new Action(instance, method));
+            }
+        }
+    }
+
     public AbstractModel run(AbstractModel abstractModel){
         while(!actions.isEmpty()){
             Action action = actions.removeFirst();
