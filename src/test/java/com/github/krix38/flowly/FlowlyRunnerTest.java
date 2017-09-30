@@ -22,6 +22,23 @@ public class FlowlyRunnerTest {
         this.employee = new Employee("jan", "kowalski", 100);
     }
 
+    @Test(expected = ActionExecutionException.class)
+    public void testRunnerExecutionException() throws ActionExecutionException {
+
+
+        FlowRegister flowRegister = new FlowRegister();
+
+        flowRegister.register(new RaiseSalary(200));
+        flowRegister.register(UpperCaseNames.class);
+        flowRegister.register(ActionThrowingExecutionException.class);
+        flowRegister.register(LowerSurname.class);
+
+
+
+        flowRegister.run(employee);
+
+    }
+
 
     @Test
     public void testRunnerModelTransformation() throws ActionExecutionException {
