@@ -1,10 +1,8 @@
 package com.github.krix38.flowly;
 
-import com.github.krix38.flowly.exampleAction.FailingAction;
-import com.github.krix38.flowly.exampleAction.LowerSurname;
-import com.github.krix38.flowly.exampleAction.RaiseSalary;
-import com.github.krix38.flowly.exampleAction.UpperCaseNames;
+import com.github.krix38.flowly.exampleAction.*;
 import com.github.krix38.flowly.exampleModel.Employee;
+import com.github.krix38.flowly.exampleModel.Manager;
 import com.github.krix38.flowly.register.FlowRegister;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +21,21 @@ public class FlowlyRunnerTest {
         this.employee = new Employee("jan", "kowalski", 100);
     }
 
+
+    @Test
+    public void testRunnerModelTransformation(){
+        FlowRegister flowRegister = new FlowRegister();
+
+        flowRegister.register(new RaiseSalary(200));
+        flowRegister.register(UpperCaseNames.class);
+        flowRegister.register(LowerSurname.class);
+        flowRegister.register(MapEmployeeToManager.class);
+
+        Manager manager = (Manager) flowRegister.run(employee);
+
+        assertEquals("JAN kowalski", manager.getNames());
+        assertEquals(new Integer(300), manager.getSalary());
+    }
 
     @Test
     public void testRunner(){

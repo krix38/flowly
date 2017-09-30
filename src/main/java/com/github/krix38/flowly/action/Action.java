@@ -31,7 +31,7 @@ public class Action {
     public AbstractModel doAction(AbstractModel abstractModel){
         if(!abstractModel.hasFailed()){
             try{
-                runMethod(abstractModel);
+                abstractModel = runMethod(abstractModel);
             }catch (Exception exception){
                 abstractModel.setFailureInformation(new FailureInformation(getTargetException(exception)));
             }
@@ -47,13 +47,28 @@ public class Action {
         }
     }
 
-    private <T> void runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private <T> AbstractModel runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         if(classTypeprovided()){
-            if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
-                method.invoke(getClassInstance(), model);
-            }
+            return instantiateClassAndInvokeMethod(model);
         }else{
+            return invokeMethod(model, instance);
+        }
+    }
+
+    private <T> AbstractModel instantiateClassAndInvokeMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
+            return invokeMethod(model, getClassInstance());
+        }else {
+            return (AbstractModel) model;
+        }
+    }
+
+    private <T> AbstractModel invokeMethod(T model, Object instance) throws IllegalAccessException, InvocationTargetException {
+        if(method.getReturnType() != void.class){
+            return (AbstractModel) method.invoke(instance, model);
+        }else {
             method.invoke(instance, model);
+            return (AbstractModel) model;
         }
 
     }

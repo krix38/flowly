@@ -34,7 +34,7 @@ public class FlowRegister {
     public AbstractModel run(AbstractModel abstractModel){
         while(!actions.isEmpty()){
             Action action = actions.removeFirst();
-            action.doAction(abstractModel);
+            abstractModel = action.doAction(abstractModel);
         }
         return abstractModel;
     }
