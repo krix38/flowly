@@ -7,6 +7,10 @@ public class ActionExecutionException extends Exception {
     public ActionExecutionException() {
     }
 
+    public ActionExecutionException(Throwable cause) {
+        super(cause);
+    }
+
     public ActionExecutionException(String message) {
         super(message);
     }

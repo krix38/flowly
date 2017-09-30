@@ -3,6 +3,7 @@ package com.github.krix38.flowly;
 import com.github.krix38.flowly.exampleAction.*;
 import com.github.krix38.flowly.exampleModel.Employee;
 import com.github.krix38.flowly.exampleModel.Manager;
+import com.github.krix38.flowly.exception.ActionExecutionException;
 import com.github.krix38.flowly.register.FlowRegister;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class FlowlyRunnerTest {
 
 
     @Test
-    public void testRunnerModelTransformation(){
+    public void testRunnerModelTransformation() throws ActionExecutionException {
         FlowRegister flowRegister = new FlowRegister();
 
         flowRegister.register(new RaiseSalary(200));
@@ -38,7 +39,7 @@ public class FlowlyRunnerTest {
     }
 
     @Test
-    public void testRunner(){
+    public void testRunner() throws ActionExecutionException {
 
         FlowRegister flowRegister = new FlowRegister();
 
@@ -55,7 +56,7 @@ public class FlowlyRunnerTest {
     }
 
     @Test
-    public void testFailure(){
+    public void testFailure() throws ActionExecutionException {
 
         FlowRegister flowRegister = new FlowRegister();
 

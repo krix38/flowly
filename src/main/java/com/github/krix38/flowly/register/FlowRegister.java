@@ -2,6 +2,7 @@ package com.github.krix38.flowly.register;
 
 import com.github.krix38.flowly.action.Action;
 import com.github.krix38.flowly.annotation.FlowAction;
+import com.github.krix38.flowly.exception.ActionExecutionException;
 import com.github.krix38.flowly.model.AbstractModel;
 
 import java.lang.reflect.Method;
@@ -31,10 +32,14 @@ public class FlowRegister {
         }
     }
 
-    public AbstractModel run(AbstractModel abstractModel){
-        while(!actions.isEmpty()){
-            Action action = actions.removeFirst();
-            abstractModel = action.doAction(abstractModel);
+    public AbstractModel run(AbstractModel abstractModel) throws ActionExecutionException {
+        try {
+            while (!actions.isEmpty()) {
+                Action action = actions.removeFirst();
+                abstractModel = action.doAction(abstractModel);
+            }
+        }catch (Exception exception){
+            throw new ActionExecutionException(exception);
         }
         return abstractModel;
     }

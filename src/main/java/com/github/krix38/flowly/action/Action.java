@@ -28,24 +28,17 @@ public class Action {
         this.method = method;
     }
 
-    public AbstractModel doAction(AbstractModel abstractModel){
+    public AbstractModel doAction(AbstractModel abstractModel) throws Exception {
         if(!abstractModel.hasFailed()){
             try{
                 abstractModel = runMethod(abstractModel);
-            }catch (Exception exception){
-                abstractModel.setFailureInformation(new FailureInformation(getTargetException(exception)));
+            }catch (InvocationTargetException exception){
+                abstractModel.setFailureInformation(new FailureInformation(exception.getTargetException()));
             }
         }
         return abstractModel;
     }
 
-    private Throwable getTargetException(Exception exception) {
-        if(exception instanceof InvocationTargetException){
-            return ((InvocationTargetException) exception).getTargetException();
-        }else{
-            return exception;
-        }
-    }
 
     private <T> AbstractModel runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         if(classTypeprovided()){
