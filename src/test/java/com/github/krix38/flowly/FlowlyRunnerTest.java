@@ -4,9 +4,13 @@ import com.github.krix38.flowly.exampleAction.*;
 import com.github.krix38.flowly.exampleModel.Employee;
 import com.github.krix38.flowly.exampleModel.Manager;
 import com.github.krix38.flowly.exception.ActionExecutionException;
+import com.github.krix38.flowly.model.AbstractModel;
 import com.github.krix38.flowly.register.FlowRegister;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -119,4 +123,33 @@ public class FlowlyRunnerTest {
         assertEquals(NullPointerException.class, employee.getFailureInformation().getException().getClass());
 
     }
+
+    @Test
+    public void testRunnerForCollectionInput() throws ActionExecutionException {
+
+        List<Employee> employees = new ArrayList<Employee>();
+        employees.add(new Employee("Mariusz", "Akwariusz", 100));
+        employees.add(new Employee("Zbigniew", "Kowalski", 200));
+        employees.add(new Employee("Tyrone", "Slothrop", 50));
+
+        FlowRegister flowRegister = new FlowRegister();
+        flowRegister.register(new RaiseSalary(200));
+        flowRegister.register(UpperCaseNames.class);
+
+        List<AbstractModel> transformedEmployees = flowRegister.runForAll(employees);
+
+        assertEquals("MARIUSZ", ((Employee)transformedEmployees.get(0)).getFirstName());
+        assertEquals("AKWARIUSZ", ((Employee)transformedEmployees.get(0)).getLastName());
+        assertEquals(new Integer(300), ((Employee)transformedEmployees.get(0)).getSalary());
+
+        assertEquals("ZBIGNIEW", ((Employee)transformedEmployees.get(1)).getFirstName());
+        assertEquals("KOWALSKI", ((Employee)transformedEmployees.get(1)).getLastName());
+        assertEquals(new Integer(400), ((Employee)transformedEmployees.get(1)).getSalary());
+
+        assertEquals("TYRONE", ((Employee)transformedEmployees.get(2)).getFirstName());
+        assertEquals("SLOTHROP", ((Employee)transformedEmployees.get(2)).getLastName());
+        assertEquals(new Integer(250), ((Employee)transformedEmployees.get(2)).getSalary());
+
+    }
+
 }
