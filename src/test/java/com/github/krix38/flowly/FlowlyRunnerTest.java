@@ -23,6 +23,18 @@ public class FlowlyRunnerTest {
     }
 
     @Test(expected = ActionExecutionException.class)
+    public void testRunnerActionWithoutDefaultConstructor() throws ActionExecutionException {
+
+
+        FlowRegister flowRegister = new FlowRegister();
+
+        flowRegister.register(ActionWithoutDefaultConstructor.class);
+
+        flowRegister.run(employee);
+
+    }
+
+    @Test(expected = ActionExecutionException.class)
     public void testRunnerExecutionException() throws ActionExecutionException {
 
 
@@ -48,6 +60,23 @@ public class FlowlyRunnerTest {
         flowRegister.register(UpperCaseNames.class);
         flowRegister.register(LowerSurname.class);
         flowRegister.register(MapEmployeeToManager.class);
+
+        Manager manager = (Manager) flowRegister.run(employee);
+
+        assertEquals("JAN kowalski", manager.getNames());
+        assertEquals(new Integer(300), manager.getSalary());
+    }
+
+    @Test
+    public void testRunnerModelTransformationUnmatchingModelOmmited() throws ActionExecutionException {
+        FlowRegister flowRegister = new FlowRegister();
+
+        flowRegister.register(new RaiseSalary(200));
+        flowRegister.register(UpperCaseNames.class);
+        flowRegister.register(LowerSurname.class);
+        flowRegister.register(MapEmployeeToManager.class);
+        flowRegister.register(UpperCaseNames.class);
+
 
         Manager manager = (Manager) flowRegister.run(employee);
 

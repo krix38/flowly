@@ -1,5 +1,6 @@
 package com.github.krix38.flowly.action;
 
+import com.github.krix38.flowly.exception.ActionExecutionException;
 import com.github.krix38.flowly.model.AbstractModel;
 import com.github.krix38.flowly.model.FailureInformation;
 
@@ -40,7 +41,7 @@ public class Action {
     }
 
 
-    private <T> AbstractModel runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    private <T> AbstractModel runMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException, ActionExecutionException {
         if(classTypeprovided()){
             return instantiateClassAndInvokeMethod(model);
         }else{
@@ -48,8 +49,16 @@ public class Action {
         }
     }
 
-    private <T> AbstractModel instantiateClassAndInvokeMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        if(methodArgumentMatchesModelClass(model) && classHasDefaultConstructor()){
+    private <T> AbstractModel instantiateClassAndInvokeMethod(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException, ActionExecutionException {
+        if(classHasDefaultConstructor()){
+            return invokeMethodForInstantiatedClass(model);
+        }else{
+            throw new ActionExecutionException(String.format("Action %s does not have default constructor provided", tClass.getSimpleName()));
+        }
+    }
+
+    private <T> AbstractModel invokeMethodForInstantiatedClass(T model) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        if(methodArgumentMatchesModelClass(model)){
             return invokeMethod(model, getClassInstance());
         }else {
             return (AbstractModel) model;
@@ -80,12 +89,13 @@ public class Action {
     }
 
     private Constructor getClassDefaultConstructor(){
+        Constructor returnConstructor = null;
         for(Constructor constructor : tClass.getConstructors()){
             if(constructor.getParameters().length == 0){
-                return constructor;
+                returnConstructor = constructor;
             }
         }
-        return null;
+        return returnConstructor;
     }
 
     private <T> Boolean methodArgumentMatchesModelClass(T model) {
