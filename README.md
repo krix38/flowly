@@ -12,7 +12,7 @@ Library for designing and running synchronous flow of task executions on provide
 
 ## Installation
 
-Simply inside cloned/downloaded repo run<code>
+Inside cloned/downloaded repo run<code>
 mvn clean install
 </code>
 and include dependency in your pom project
