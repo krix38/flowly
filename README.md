@@ -41,4 +41,114 @@ Action can be scheduled to run by <code>FlowRegister.register(Object)</code>. Re
 
 To run scheduled actions, call <code>FlowRegister.run(AbstractModel)</code> on your model class.
 
-For examples take a look at [unit tests](https://github.com/krix38/flowly/blob/master/src/test/java/com/github/krix38/flowly/FlowlyRunnerTest.java)
+## Example
+
+**Account.java (model)**
+```java
+public abstract class Account extends AbstractModel {
+    private String username;
+
+    public Account(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+}
+```
+
+
+**FreeAccount.java (model)**
+```java
+public class FreeAccount extends Account {
+    public FreeAccount(String username, Integer daysLeft) {
+        super(username);
+        this.daysLeft = daysLeft;
+    }
+    private Integer daysLeft;
+
+    public Integer getDaysLeft() {
+        return daysLeft;
+    }
+}
+```
+
+
+**PremiumAccount.java (model)**
+```java
+public class PremiumAccount extends Account{
+
+    public PremiumAccount(String username, Long availableStorage) {
+        super(username);
+        this.setAvailableStorage(availableStorage);
+    }
+
+    private Long availableStorage;
+
+    public void setAvailableStorage(Long availableStorage) {
+        this.availableStorage = availableStorage;
+    }
+
+    public Long getAvailableStorage() {
+        return availableStorage;
+    }
+}
+```
+
+
+**AddStorage.java (action)**
+```java
+public class AddStorage {
+
+    private Long storageToAdd;
+
+    public AddStorage(Long storageToAdd) {
+        this.storageToAdd = storageToAdd;
+    }
+
+    @FlowAction
+    public void add(PremiumAccount premiumAccount){
+        premiumAccount.setAvailableStorage(premiumAccount.getAvailableStorage() + storageToAdd);
+    }
+}
+```
+
+
+**MapFreeToPremiumAccount.java (action)**
+```java
+public class MapFreeToPremiumAccount {
+
+    private static final Long DEFAULT_AVAILABLE_STORAGE = 100L;
+
+    @FlowAction
+    public PremiumAccount map(FreeAccount freeAccount){
+        return new PremiumAccount(freeAccount.getUsername(), DEFAULT_AVAILABLE_STORAGE);
+    }
+}
+```
+
+
+**UpdateToPremiumService.java**
+```java
+public class UpdateToPremiumService {
+    private FlowRegister flowRegister;
+
+    public UpdateToPremiumService() {
+        flowRegister = new FlowRegister();
+        flowRegister.register(new MapFreeToPremiumAccount());  //can pass MapFreeToPremiumAccount.class as well
+        flowRegister.register(new AddStorage(200L));
+    }
+
+    public List<PremiumAccount> updateToPremium(List<FreeAccount> freeAccounts) throws ActionExecutionException {
+        return flowRegister.runForAll(freeAccounts)
+                .stream()
+                .filter(account -> !account.hasFailed())
+                .map(account -> (PremiumAccount)account)
+                .collect(Collectors.toList());
+    }
+}
+```
+
+
+For more examples take a look at [unit tests](https://github.com/krix38/flowly/blob/master/src/test/java/com/github/krix38/flowly/FlowlyRunnerTest.java)
